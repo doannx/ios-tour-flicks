@@ -21,14 +21,17 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     var selectedMovie = NSDictionary()
     
+    let refreshControl = UIRefreshControl()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
         movieTable.delegate = self
         movieTable.dataSource = self
-        
+        setupRefreshControl()
         self.loadJsonData()
+
     }
     
     override func didReceiveMemoryWarning() {
@@ -67,7 +70,7 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
     }
     
-    private func loadJsonData() {
+    func loadJsonData() {
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
         let request = URLRequest(
@@ -100,10 +103,18 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
                                         print("response: \(responseDictionary)")
                                         self.movieData = responseDictionary["results"] as! [NSDictionary]
                                         self.movieTable.reloadData()
+                                        self.refreshControl.endRefreshing()
+                                        
                                     }
                                 }
             })
         task.resume()
+    }
+    
+    func setupRefreshControl() {
+        //refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(MoviesViewController.loadJsonData), for: UIControlEvents.valueChanged)
+        movieTable.insertSubview(refreshControl, at: 0)
     }
     
 }
