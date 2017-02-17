@@ -10,12 +10,15 @@ import UIKit
 import AFNetworking
 import MBProgressHUD
 
-class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate {
     
     @IBOutlet weak var movieTable: UITableView!
     @IBOutlet weak var errorView: UIView!
     
+    @IBOutlet weak var movieCollection: UICollectionView!
+    
     var movieData = [NSDictionary]()
+    @IBOutlet weak var segmentViewType: UISegmentedControl!
     
     let posterBaseUrl = "https://image.tmdb.org/t/p/w300"
     
@@ -24,6 +27,15 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let refreshControl = UIRefreshControl()
     var endpoint: String = ""
     
+    @IBAction func viewTypeChanged(_ sender: AnyObject) {
+        if(segmentViewType.selectedSegmentIndex==1){
+            movieTable.isHidden = true
+            movieCollection.isHidden = false
+        }else{
+            movieTable.isHidden = false
+            movieCollection.isHidden = true
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,9 +43,14 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
         // Do any additional setup after loading the view.
         movieTable.delegate = self
         movieTable.dataSource = self
+        
+        movieCollection.delegate = self
+        movieCollection.dataSource = self
+        
         setupRefreshControl()
         self.loadJsonData()
-
+        segmentViewType.selectedSegmentIndex=1
+        viewTypeChanged(self)
     }
     
     override func didReceiveMemoryWarning() {
@@ -72,6 +89,10 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        
+    }
+    
     func loadJsonData() {
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         let url = URL(string: "https://api.themoviedb.org/3/movie/\(endpoint)?api_key=\(apiKey)")
@@ -105,6 +126,7 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
                                         print("response: \(responseDictionary)")
                                         self.movieData = responseDictionary["results"] as! [NSDictionary]
                                         self.movieTable.reloadData()
+                                        self.movieCollection.reloadData()
                                         self.refreshControl.endRefreshing()
                                         
                                     }
@@ -118,5 +140,31 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
         refreshControl.addTarget(self, action: #selector(MoviesViewController.loadJsonData), for: UIControlEvents.valueChanged)
         movieTable.insertSubview(refreshControl, at: 0)
     }
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return movieData.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        numberOfItemsInSection section: Int) -> Int {
+        return movieData[section].count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        selectedMovie = self.movieData[indexPath.row]
+        performSegue(withIdentifier: "showDetail", sender: self)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "movieCollectionCell",
+                                                      for: indexPath) as! MovieCellCollectionViewCell
+        
+        let imgUrl = posterBaseUrl + (self.movieData[indexPath.row]["poster_path"] as? String)!
+        cell.poster.setImageWith(NSURL(string: imgUrl) as! URL)
+        // Configure the cell
+        return cell
+    }
+    
     
 }
