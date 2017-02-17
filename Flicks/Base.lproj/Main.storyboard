@@ -96,11 +96,28 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <view alpha="0.80000001192092896" contentMode="scaleToFill" id="jsn-ai-W7S" userLabel="Error View">
+                                <rect key="frame" x="0.0" y="263" width="320" height="41"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="⚠️ Network error. Click to retry!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Ub8-9F-8Xw">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="41"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <gestureRecognizers/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <gestureRecognizers/>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
                     <navigationItem key="navigationItem" id="hMJ-QO-AxL"/>
                     <connections>
+                        <outlet property="errorView" destination="jsn-ai-W7S" id="1DC-1Z-JNC"/>
                         <outlet property="movieTable" destination="DjB-2O-xpM" id="x5M-MI-Vgu"/>
                         <segue destination="P8r-Mi-EKe" kind="push" identifier="showDetail" id="NO2-uW-H3p"/>
                     </connections>

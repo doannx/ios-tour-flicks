@@ -13,6 +13,7 @@ import MBProgressHUD
 class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var movieTable: UITableView!
+    @IBOutlet weak var errorView: UIView!
     
     var movieData = [NSDictionary]()
     
@@ -78,7 +79,7 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
             delegate: nil,
             delegateQueue: OperationQueue.main
         )
-        
+        errorView.isHidden = true
         // Display HUD right before the request is made
         MBProgressHUD.showAdded(to: self.view, animated: true)
         
@@ -87,6 +88,11 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
                              completionHandler: { (dataOrNil, response, error) in
                                 // Hide HUD once the network request comes back (must be done on main UI thread)
                                 MBProgressHUD.hide(for: self.view, animated: true)
+                                // check for any errors
+                                guard error == nil else {
+                                    self.errorView.isHidden = false
+                                    return
+                                }
                                 
                                 if let data = dataOrNil {
                                     if let responseDictionary = try! JSONSerialization.jsonObject(
