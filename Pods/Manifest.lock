@@ -14,16 +14,26 @@ PODS:
   - AFNetworking/Serialization (3.1.0)
   - AFNetworking/UIKit (3.1.0):
     - AFNetworking/NSURLSession
+  - Alamofire (4.3.0)
+  - AlamofireImage (3.2.0):
+    - Alamofire (~> 4.1)
   - MBProgressHUD (1.0.0)
+  - SwiftyJSON (3.1.4)
 
 DEPENDENCIES:
   - AFNetworking (~> 3.0)
+  - Alamofire
+  - AlamofireImage
   - MBProgressHUD
+  - SwiftyJSON
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
+  Alamofire: 856a113053a7bc9cbe5d6367a555d773fc5cfef7
+  AlamofireImage: 157ed682cc81d3b9db4fb90c1f12180ac552d93b
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
+  SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
 
-PODFILE CHECKSUM: 31462f8bb450ce77dccd650135bfd271d5793f31
+PODFILE CHECKSUM: bd3bbfcb2df7c05320729f1ca00500868cc29fdc
 
 COCOAPODS: 1.2.0

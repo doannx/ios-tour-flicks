@@ -9,22 +9,24 @@
 import UIKit
 import AFNetworking
 import MBProgressHUD
+import SwiftyJSON
 
-class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate {
+class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate, UISearchBarDelegate {
     
     @IBOutlet weak var movieTable: UITableView!
     @IBOutlet weak var errorView: UIView!
-    
     @IBOutlet weak var movieCollection: UICollectionView!
-    
-    var movieData = [NSDictionary]()
+    @IBOutlet weak var searchBarCtrl: UISearchBar!
     @IBOutlet weak var segmentViewType: UISegmentedControl!
     
-    let posterBaseUrl = "https://image.tmdb.org/t/p/w300"
-    
+    var movieData = [NSDictionary]()
+    var filteredMovies = [NSDictionary]()
     var selectedMovie = NSDictionary()
     
     let refreshControl = UIRefreshControl()
+    var searchController: UISearchController!
+    
+    let posterBaseUrl = "https://image.tmdb.org/t/p/w300"
     var endpoint: String = ""
     
     @IBAction func viewTypeChanged(_ sender: AnyObject) {
@@ -43,14 +45,19 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
         // Do any additional setup after loading the view.
         movieTable.delegate = self
         movieTable.dataSource = self
-        
         movieCollection.delegate = self
         movieCollection.dataSource = self
+        searchBarCtrl.delegate = self
+        
         
         setupRefreshControl()
-        self.loadJsonData()
-        segmentViewType.selectedSegmentIndex=1
+        
+        setupSearchBar()
+        
+        segmentViewType.selectedSegmentIndex = 1
         viewTypeChanged(self)
+        
+        self.loadJsonData()
     }
     
     override func didReceiveMemoryWarning() {
@@ -59,20 +66,23 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.movieData.count
+        return self.filteredMovies.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "movieCell", for: indexPath) as! MovieCellTableViewCell
-        cell.title.text = self.movieData[indexPath.row]["title"] as? String
-        cell.desc.text = self.movieData[indexPath.row]["overview"] as? String
-        let imgUrl = posterBaseUrl + (self.movieData[indexPath.row]["poster_path"] as? String)!
+        
+        let movieAtIndexPath = self.filteredMovies[indexPath.row]
+        cell.title.text = movieAtIndexPath["title"] as? String
+        cell.desc.text = movieAtIndexPath["overview"] as? String
+        let imgUrl = posterBaseUrl + (movieAtIndexPath["poster_path"] as? String)!
         cell.thumnail.setImageWith(NSURL(string: imgUrl) as! URL)
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedMovie = self.movieData[indexPath.row]
+        selectedMovie = self.filteredMovies[indexPath.row]
         performSegue(withIdentifier: "showDetail", sender: self)
     }
     
@@ -84,13 +94,6 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
         // Pass the selected object to the new view controller.
         let nextVC = segue.destination as! MovieDetailViewController
         nextVC.inputMovie = selectedMovie
-        
-        
-        
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        
     }
     
     func loadJsonData() {
@@ -123,12 +126,14 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
                                 if let data = dataOrNil {
                                     if let responseDictionary = try! JSONSerialization.jsonObject(
                                         with: data, options:[]) as? NSDictionary {
-                                        print("response: \(responseDictionary)")
+                                        
                                         self.movieData = responseDictionary["results"] as! [NSDictionary]
-                                        self.movieTable.reloadData()
-                                        self.movieCollection.reloadData()
+                                        self.filteredMovies = self.movieData
+                                        
                                         self.refreshControl.endRefreshing()
                                         
+                                        self.movieTable.reloadData()
+                                        self.movieCollection.reloadData()
                                     }
                                 }
             })
@@ -136,35 +141,72 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func setupRefreshControl() {
-        //refreshControl = UIRefreshControl()
+        // refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(MoviesViewController.loadJsonData), for: UIControlEvents.valueChanged)
+        
         movieTable.insertSubview(refreshControl, at: 0)
+        movieCollection.insertSubview(refreshControl, at: 0)
     }
     
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return movieData.count
+    func setupSearchBar() {
+        //searchController = UISearchController(searchResultsController: nil)
+        //searchController.searchResultsUpdater = self
+        //searchController.dimsBackgroundDuringPresentation = false
+        //definesPresentationContext = true
+        //movieTable.tableHeaderView = searchController.searchBar
+        self.navigationItem.titleView = searchBarCtrl
     }
     
     func collectionView(_ collectionView: UICollectionView,
                         numberOfItemsInSection section: Int) -> Int {
-        return movieData[section].count
+        return filteredMovies.count
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        selectedMovie = self.movieData[indexPath.row]
+        selectedMovie = self.filteredMovies[indexPath.row]
         performSegue(withIdentifier: "showDetail", sender: self)
     }
     
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "movieCollectionCell",
                                                       for: indexPath) as! MovieCellCollectionViewCell
-        
-        let imgUrl = posterBaseUrl + (self.movieData[indexPath.row]["poster_path"] as? String)!
-        cell.poster.setImageWith(NSURL(string: imgUrl) as! URL)
         // Configure the cell
+        let movieAtIndexPath = filteredMovies[indexPath.row]
+        let imgUrl = posterBaseUrl + (movieAtIndexPath["poster_path"] as? String)!
+        cell.poster.setImageWith(NSURL(string: imgUrl) as! URL)
+        
         return cell
     }
     
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        filteredMovies = searchText.isEmpty ? movieData : movieData.filter { (item: NSDictionary) -> Bool in
+            return (item["title"] as! String).contains(searchText)
+        }
+        
+        movieTable.reloadData()
+        movieCollection.reloadData()
+    }
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        self.searchBarCtrl.setShowsCancelButton(true, animated: true)
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        view.endEditing(true)
+        searchBarCtrl.resignFirstResponder()
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBarCtrl.showsCancelButton = false
+        searchBarCtrl.text = ""
+        searchBarCtrl.resignFirstResponder()
+        filteredMovies = movieData
+        
+        movieTable.reloadData()
+        movieCollection.reloadData()
+    }
     
 }
+
