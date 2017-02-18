@@ -10,6 +10,8 @@ import UIKit
 import AFNetworking
 import MBProgressHUD
 import SwiftyJSON
+import Alamofire
+import AlamofireImage
 
 class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate, UISearchBarDelegate {
     
@@ -58,6 +60,8 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
         viewTypeChanged(self)
         
         self.loadJsonData()
+        
+        self.navigationController?.navigationBar.barTintColor = UIColor.blue
     }
     
     override func didReceiveMemoryWarning() {
@@ -93,6 +97,16 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         selectedMovie = self.filteredMovies[indexPath.row]
+        // set background for navbar
+        let imgUrl = posterBaseUrl + (selectedMovie["poster_path"] as? String)!
+        Alamofire.request(imgUrl, method: .get).responseImage { response in
+            guard let image = response.result.value else {
+                // Handle error
+                return
+            }
+            self.navigationController?.navigationBar.setBackgroundImage(image, for: UIBarMetrics.default)
+        }
+        
         performSegue(withIdentifier: "showDetail", sender: self)
     }
     
@@ -174,6 +188,15 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         selectedMovie = self.filteredMovies[indexPath.row]
+        // set background for navbar
+        let imgUrl = posterBaseUrl + (selectedMovie["poster_path"] as? String)!
+        Alamofire.request(imgUrl, method: .get).responseImage { response in
+            guard let image = response.result.value else {
+                // Handle error
+                return
+            }
+            self.navigationController?.navigationBar.setBackgroundImage(image, for: UIBarMetrics.default)
+        }
         performSegue(withIdentifier: "showDetail", sender: self)
     }
     
