@@ -78,6 +78,16 @@ class MoviesViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.desc.text = movieAtIndexPath["overview"] as? String
         let imgUrl = posterBaseUrl + (movieAtIndexPath["poster_path"] as? String)!
         cell.thumnail.setImageWith(NSURL(string: imgUrl) as! URL)
+        
+        cell.selectionStyle = UITableViewCellSelectionStyle.gray
+        
+        // Use a red color when the user selects the cell
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = UIColor.red
+        backgroundView.layer.borderWidth = 10
+        backgroundView.layer.borderColor = UIColor.black.cgColor
+        cell.selectedBackgroundView = backgroundView
+        
         return cell
     }
     
