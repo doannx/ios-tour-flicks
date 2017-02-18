@@ -16,9 +16,6 @@ class MovieDetailViewController: UIViewController {
     
     var inputMovie = NSDictionary()
     
-    let posterSmallSizeBaseUrl = "https://image.tmdb.org/t/p/w300"
-    let posterLargeSizeBaseUrl = "https://image.tmdb.org/t/p/w500"
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -26,11 +23,11 @@ class MovieDetailViewController: UIViewController {
         desc.text = inputMovie["overview"] as? String
         desc.sizeToFit()
         
-        // Fading in an Image Loaded from the Network
-        let imageUrl = (inputMovie["poster_path"] as? String)!
-        let smallImageRequest = NSURLRequest(url: NSURL(string: posterSmallSizeBaseUrl + imageUrl)! as URL)
-        let largeImageRequest = NSURLRequest(url: NSURL(string: posterLargeSizeBaseUrl + imageUrl)! as URL)
+        // fading in an Image Loaded from the Network
+        let smallImageRequest = NSURLRequest(url: NSURL(string: FlicksUtil.getImageUrl(posterPath: inputMovie["poster_path"] as! String, res: Const.Small_Res))! as URL)
+        let largeImageRequest = NSURLRequest(url: NSURL(string: FlicksUtil.getImageUrl(posterPath: inputMovie["poster_path"] as! String, res: Const.Large_Res))! as URL)
         
+        // TODO: Need to optimize code @here
         // firstly, get the SMALL image
         posterImg.setImageWith(
             smallImageRequest as URLRequest,
@@ -79,12 +76,11 @@ class MovieDetailViewController: UIViewController {
                     self.posterImg.alpha = 0.9
                     self.posterImg.image = smallImage
                     
-                    
                     UIView.animate(
-                        withDuration: 0.3,
+                        withDuration: 0.9,
                         animations: { () -> Void in
                             self.posterImg.alpha = 1.0
-                    },
+                        },
                         completion: { (sucess) -> Void in
                             // get the LARGE image
                             self.posterImg.setImageWith(
@@ -105,18 +101,17 @@ class MovieDetailViewController: UIViewController {
                                         print("LARGE IMAGE was cached so just update the image")
                                         self.posterImg.image = largeImage
                                     }
-                            },
+                                },
                                 failure: { (request, response, error) -> Void in
-                            }
+                                }
                             )
-                    }
+                        }
                     )
                 }
-        },
+            },
             failure: { (request, response, error) -> Void in
-                // do something for the failure condition
-                // possibly try to get the large image
-        })
+            }
+        )
         
         scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: desc.frame.origin.y + desc.frame.size.height + 10)
         
@@ -139,18 +134,4 @@ class MovieDetailViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
-     }
-     */
-    
-    
-    
 }
