@@ -20,6 +20,9 @@ class MoviesViewController: UIViewController {
     @IBOutlet weak var searchBarCtrl: UISearchBar!
     @IBOutlet weak var segmentViewType: UISegmentedControl!
     
+    var loadingMoreViewTable: InfiniteScrollActivityView?
+    var loadingMoreViewCollection: InfiniteScrollActivityView?
+    
     let refreshControl = UIRefreshControl()
     let searchController: UISearchController! = nil
     
@@ -28,6 +31,8 @@ class MoviesViewController: UIViewController {
     var selectedMovie = NSDictionary()
     
     var endpoint: String = ""
+    var isMoreDataLoading = false
+    let scrollOffsetThreshold = 300
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,6 +53,25 @@ class MoviesViewController: UIViewController {
         
         navigationController?.navigationBar.barTintColor = UIColor(red:0.98, green:0.86, blue:0.52, alpha:1.0)
         navigationController?.navigationBar.backgroundColor = UIColor(red:0.98, green:0.86, blue:0.52, alpha:1.0)
+        
+        // Set up Infinite Scroll loading indicator
+        let frame = CGRect(x: 0, y: movieTable.contentSize.height, width: movieTable.bounds.size.width, height: InfiniteScrollActivityView.defaultHeight)
+        loadingMoreViewTable = InfiniteScrollActivityView(frame: frame)
+        loadingMoreViewTable!.isHidden = true
+        movieTable.addSubview(loadingMoreViewTable!)
+        
+        var insets = movieTable.contentInset
+        insets.bottom += InfiniteScrollActivityView.defaultHeight
+        movieTable.contentInset = insets
+        
+        let frameCollection = CGRect(x: 0, y: movieCollection.contentSize.height, width: movieCollection.bounds.size.width, height: InfiniteScrollActivityView.defaultHeight)
+        loadingMoreViewCollection = InfiniteScrollActivityView(frame: frameCollection)
+        loadingMoreViewCollection!.isHidden = true
+        movieCollection.addSubview(loadingMoreViewCollection!)
+        
+        var insetsCollection = movieCollection.contentInset
+        insetsCollection.bottom += InfiniteScrollActivityView.defaultHeight
+        movieCollection.contentInset = insetsCollection
     }
     
     override func didReceiveMemoryWarning() {
@@ -215,7 +239,6 @@ extension MoviesViewController: UICollectionViewDataSource, UICollectionViewDele
     }
     
     func configureCollectionView() {
-        // 1
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.itemSize = CGSize(width: 80.0, height: 100.0)
         flowLayout.sectionInset = UIEdgeInsets(top: 5.0, left: 10.0, bottom: 5.0, right: 10.0)
@@ -258,5 +281,61 @@ extension MoviesViewController: UISearchBarDelegate {
         
         movieTable.reloadData()
         movieCollection.reloadData()
+    }
+}
+
+extension MoviesViewController: UIScrollViewDelegate {
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if(!isMoreDataLoading) {
+            // Calculate the position of one screen length before the bottom of the results
+            let scrollViewContentHeight = segmentViewType.selectedSegmentIndex == 0 ? movieTable.contentSize.height : movieCollection.contentSize.height
+            let scrollOffsetThreshold = segmentViewType.selectedSegmentIndex == 0 ? scrollViewContentHeight - movieTable.bounds.size.height : scrollViewContentHeight - movieCollection.bounds.size.height
+            
+            // When the user has scrolled past the threshold, start requesting
+            if(scrollView.contentOffset.y > scrollOffsetThreshold && (movieTable.isDragging || movieCollection.isDragging)) {
+                isMoreDataLoading = true
+                
+                // update position of loadingMoreView, and start loading indicator
+                let y = segmentViewType.selectedSegmentIndex == 0 ? movieTable.contentSize.height : movieCollection.contentSize.height
+                let width = segmentViewType.selectedSegmentIndex == 0 ? self.movieTable.bounds.size.width : self.movieCollection.bounds.size.width
+                let frame = CGRect(x: 0, y: y, width: width, height: InfiniteScrollActivityView.defaultHeight)
+                self.loadingMoreViewTable?.frame = frame
+                self.loadingMoreViewTable!.startAnimating()
+                
+                loadMoreData()
+            }
+            
+        }
+    }
+    
+    func loadMoreData() {
+        
+        let url = URL(string: FlicksUtil.getApiUrl(endPoint: endpoint))
+        
+        let request = URLRequest(
+            url: url!,
+            cachePolicy: NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData,
+            timeoutInterval: 10)
+        
+        let session = URLSession(
+            configuration: URLSessionConfiguration.default,
+            delegate: nil,
+            delegateQueue: OperationQueue.main
+        )
+        
+        let task : URLSessionDataTask =
+            session.dataTask(with: request, completionHandler: { (data, response, error) in
+                // update flag
+                self.isMoreDataLoading = false
+                
+                // stop the loading indicator
+                self.loadingMoreViewTable!.stopAnimating()
+                
+                // Reload the tableView now that there is new data
+                self.movieTable.reloadData()
+                self.movieCollection.reloadData()
+            })
+        task.resume()
     }
 }
