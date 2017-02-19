@@ -44,7 +44,7 @@ class MoviesViewController: UIViewController {
         
         loadSettings()
         loadJsonData()
-        configureCollectionView()
+        // configureCollectionView()
     }
     
     override func didReceiveMemoryWarning() {
