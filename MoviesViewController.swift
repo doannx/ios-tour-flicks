@@ -44,6 +44,7 @@ class MoviesViewController: UIViewController {
         
         loadSettings()
         loadJsonData()
+        configureCollectionView()
     }
     
     override func didReceiveMemoryWarning() {
@@ -149,8 +150,8 @@ extension MoviesViewController: UITableViewDelegate, UITableViewDataSource {
         
         // update cell selection style
         let backgroundView = UIView()
-        backgroundView.backgroundColor = UIColor.red
-        backgroundView.layer.borderWidth = 5
+        backgroundView.backgroundColor = UIColor(red:0.96, green:0.97, blue:0.70, alpha:1.0)
+        backgroundView.layer.borderWidth = 1
         backgroundView.layer.borderColor = UIColor.gray.cgColor
         cell.selectedBackgroundView = backgroundView
         
@@ -183,6 +184,16 @@ extension MoviesViewController: UICollectionViewDataSource, UICollectionViewDele
         // configure the cell
         cell.poster.setImageWith(NSURL(string: FlicksUtil.getImageUrl(posterPath: filteredMovieData[indexPath.row]["poster_path"] as! String, res: Const.Small_Res)) as! URL)
         return cell
+    }
+    
+    func configureCollectionView() {
+        // 1
+        let flowLayout = UICollectionViewFlowLayout()
+        flowLayout.itemSize = CGSize(width: 80.0, height: 100.0)
+        flowLayout.sectionInset = UIEdgeInsets(top: 5.0, left: 10.0, bottom: 5.0, right: 10.0)
+        flowLayout.minimumInteritemSpacing = 10.0
+        flowLayout.minimumLineSpacing = 10.0
+        movieCollection.collectionViewLayout = flowLayout
     }
 }
 
