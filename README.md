@@ -39,10 +39,13 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
 
-- Only displaying well in the poitrait mode on iphoneSE screen :sweat:
-- Spending a lot of time on doing GUI but still can't make it work as expected, especially the collectionView layout :angry:
-- Can not fill the background image full of navigation bar :sweat:
-- Still have bug in pull-to-request (work with collection view but not with table view) & infinite loading (work with table view but not with collection view), I reviewed my code hardly but still not find the cause yet :sweat:
+1. Only displaying well in the poitrait mode on iphoneSE screen :sweat:
+2. Spending a lot of time on doing GUI but still can't make it work as expected, especially the collectionView layout :angry:
+3. Can not fill the background image full of navigation bar :sweat:
+4. Still have bug in pull-to-request (work with collection view but not with table view) & infinite loading (work with table view but not with collection view), I reviewed my code hardly but still not find the cause yet :sweat:
+5. Can not hide the task bar in detail screen
+6. Still not find out how to register/catch the valueChanged event for the tabBar (because I use the tabBar by programmatic, not the UITabBar control, following the tutorial video that is suggested at Walkthrough Videos)
+7. Xcode is so ugly
 
 ## License
 
