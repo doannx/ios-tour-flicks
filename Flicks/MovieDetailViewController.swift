@@ -28,10 +28,8 @@ class MovieDetailViewController: UIViewController {
         
         // Do any additional setup after loading the view.
         navigationController?.navigationBar.setBackgroundImage(nil, for: .default)
-        navigationController?.navigationBar.barTintColor = UIColor.black
-        navigationController?.navigationBar.backgroundColor = UIColor.black
-        navigationController?.navigationBar.tintColor = UIColor.black
-        navigationController?.view.backgroundColor = UIColor.black
+        navigationController?.navigationBar.barTintColor = UIColor(red:0.98, green:0.86, blue:0.52, alpha:1.0)
+        navigationController?.navigationBar.backgroundColor = UIColor(red:0.98, green:0.86, blue:0.52, alpha:1.0)
         
         popularityView.text = "-/-"
         if let popularity = inputMovie["popularity"]  as? String {
@@ -152,7 +150,7 @@ class MovieDetailViewController: UIViewController {
         
         infoView.frame.size = CGSize(width: infoView.frame.width, height: titleView.frame.height + releaseDateView.frame.height + overviewLable.frame.height + 30)
         infoView.frame.origin.x = 20
-        infoView.frame.origin.y = 440
+        infoView.frame.origin.y = UIScreen.main.bounds.height - infoView.frame.size.height
         scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: infoView.frame.origin.y + infoView.frame.size.height + 30)
         
         let horizontalMotionEffect = UIInterpolatingMotionEffect(keyPath: "center.x", type: .tiltAlongHorizontalAxis)

@@ -45,6 +45,9 @@ class MoviesViewController: UIViewController {
         
         loadSettings()
         loadJsonData()
+        
+        navigationController?.navigationBar.barTintColor = UIColor(red:0.98, green:0.86, blue:0.52, alpha:1.0)
+        navigationController?.navigationBar.backgroundColor = UIColor(red:0.98, green:0.86, blue:0.52, alpha:1.0)
     }
     
     override func didReceiveMemoryWarning() {
@@ -62,6 +65,8 @@ class MoviesViewController: UIViewController {
     @IBAction func viewTypeChanged(_ sender: AnyObject) {
         movieTable.isHidden = segmentViewType.selectedSegmentIndex == 1 ? true : false
         movieCollection.isHidden = !movieTable.isHidden
+        
+        UserDefaults.standard.saveViewOption(viewOption: segmentViewType.selectedSegmentIndex)
     }
     
     // MARK: - Navigation
@@ -73,7 +78,7 @@ class MoviesViewController: UIViewController {
     }
     
     func loadSettings() {
-        segmentViewType.selectedSegmentIndex = 1
+        segmentViewType.selectedSegmentIndex = UserDefaults.standard.loadViewOption()
         viewTypeChanged(self)
     }
     
@@ -110,6 +115,7 @@ class MoviesViewController: UIViewController {
                                 // check for any errors
                                 guard error == nil else {
                                     self.errorView.isHidden = false
+                                    self.searchBarCtrl.isHidden = true
                                     return
                                 }
                                 
@@ -118,7 +124,14 @@ class MoviesViewController: UIViewController {
                                         with: data, options:[]) as? NSDictionary {
                                         
                                         self.fullMovieData = responseDictionary["results"] as! [NSDictionary]
-                                        self.filteredMovieData = self.fullMovieData
+                                        
+                                        let lastSearchValue = UserDefaults.standard.loadSearchValue()
+                                        
+                                        self.filteredMovieData = lastSearchValue.isEmpty ? self.fullMovieData : self.fullMovieData.filter { (item: NSDictionary) -> Bool in
+                                            return (item["title"] as! String).contains(lastSearchValue)
+                                        }
+                                        
+                                        self.searchBarCtrl.text = lastSearchValue
                                         
                                         self.refreshControl.endRefreshing()
                                         
@@ -138,6 +151,16 @@ class MoviesViewController: UIViewController {
     
     func setupSearchBar() {
         self.navigationItem.titleView = searchBarCtrl
+    }
+    
+    func setupErrorView() {
+        errorView.isHidden = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(MoviesViewController.onErrorViewTap))
+        errorView.addGestureRecognizer(tapGesture)
+    }
+    
+    func onErrorViewTap(sender: AnyObject) {
+        loadJsonData()
     }
 }
 
@@ -209,6 +232,8 @@ extension MoviesViewController: UISearchBarDelegate {
             return (item["title"] as! String).contains(searchText)
         }
         
+        UserDefaults.standard.saveSearchValue(lastSearchValue: searchText)
+        
         movieTable.reloadData()
         movieCollection.reloadData()
     }
@@ -228,6 +253,8 @@ extension MoviesViewController: UISearchBarDelegate {
         searchBarCtrl.resignFirstResponder()
         
         filteredMovieData = fullMovieData
+        
+        UserDefaults.standard.saveSearchValue(lastSearchValue: "")
         
         movieTable.reloadData()
         movieCollection.reloadData()
