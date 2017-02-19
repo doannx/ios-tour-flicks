@@ -2,7 +2,7 @@
 
 **Flicks** is a movies app using the [The Movie Database API](http://docs.themoviedb.apiary.io/#).
 
-Time spent: **14** hours spent in total
+Time spent: **15** hours spent in total
 
 ## User Stories
 
@@ -42,6 +42,7 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 - Only displaying well in the poitrait mode on iphoneSE screen :sweat:
 - Spending a lot of time on doing GUI but still can't make it work as expected, especially the collectionView layout :angry:
 - Can not fill the background image full of navigation bar :sweat:
+- Still have bug in pull-to-request (work with collection view but not with table view) & infinite loading (work with table view but not with collection view), I reviewed my code hardly but still not find the cause yet :sweat:
 
 ## License
 
