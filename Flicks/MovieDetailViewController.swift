@@ -18,6 +18,8 @@ class MovieDetailViewController: UIViewController {
     @IBOutlet weak var overviewLable: UILabel!
     @IBOutlet weak var popularityView: UILabel!
     @IBOutlet weak var releaseDateView: UILabel!
+    @IBOutlet weak var voteLabel: UILabel!
+    @IBOutlet weak var langLabel: UILabel!
     
     var inputMovie = NSDictionary()
     
@@ -31,10 +33,7 @@ class MovieDetailViewController: UIViewController {
         navigationController?.navigationBar.tintColor = UIColor.black
         navigationController?.view.backgroundColor = UIColor.black
         
-        let title = inputMovie["title"] as? String
-        let overview = inputMovie["overview"] as? String
-        
-        popularityView.text = "-"
+        popularityView.text = "-/-"
         if let popularity = inputMovie["popularity"]  as? String {
             popularityView.text = "\(Int(popularity))%"
         }
@@ -46,8 +45,19 @@ class MovieDetailViewController: UIViewController {
             releaseDateView.text = formatter.string(from: formatter.date(from: releaseDateString)!)
         }
         
-        titleView.text = title
-        overviewLable.text = overview
+        langLabel.text = "-/-"
+        if let language = inputMovie["original_language"] as? String {
+            langLabel.text = language.uppercased()
+        }
+        
+        voteLabel.text = "-/-"
+        if let vote = inputMovie["vote_count"] as? String {
+            voteLabel.text = vote
+        }
+        
+        titleView.text = inputMovie["title"] as? String
+        
+        overviewLable.text = inputMovie["overview"] as? String
         overviewLable.sizeToFit()
         
         // fading in an Image Loaded from the Network
@@ -142,8 +152,8 @@ class MovieDetailViewController: UIViewController {
         
         infoView.frame.size = CGSize(width: infoView.frame.width, height: titleView.frame.height + releaseDateView.frame.height + overviewLable.frame.height + 30)
         infoView.frame.origin.x = 20
-        infoView.frame.origin.y = 400
-        scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: infoView.frame.origin.y + infoView.frame.size.height + 5)
+        infoView.frame.origin.y = 440
+        scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: infoView.frame.origin.y + infoView.frame.size.height + 30)
         
         let horizontalMotionEffect = UIInterpolatingMotionEffect(keyPath: "center.x", type: .tiltAlongHorizontalAxis)
         horizontalMotionEffect.minimumRelativeValue = -50
