@@ -11,7 +11,7 @@
 		5217EF561E5756C000A10573 /* MovieCellCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5217EF551E5756C000A10573 /* MovieCellCollectionViewCell.swift */; };
 		5217EF581E58A6C100A10573 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5217EF571E58A6C100A10573 /* Constant.swift */; };
 		5217EF5A1E58AA7C00A10573 /* FlicksUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5217EF591E58AA7C00A10573 /* FlicksUtil.swift */; };
-		5217EF601E59A1BE00A10573 /* StorageUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5217EF5F1E59A1BE00A10573 /* StorageUtils.swift */; };
+		5217EF621E59A96C00A10573 /* StorageUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5217EF611E59A96C00A10573 /* StorageUtils.swift */; };
 		5286F7111E5362A8004273C9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5286F7101E5362A8004273C9 /* AppDelegate.swift */; };
 		5286F7161E5362A8004273C9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5286F7141E5362A8004273C9 /* Main.storyboard */; };
 		5286F7181E5362A8004273C9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5286F7171E5362A8004273C9 /* Assets.xcassets */; };
@@ -45,7 +45,7 @@
 		5217EF551E5756C000A10573 /* MovieCellCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MovieCellCollectionViewCell.swift; sourceTree = "<group>"; };
 		5217EF571E58A6C100A10573 /* Constant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
 		5217EF591E58AA7C00A10573 /* FlicksUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlicksUtil.swift; sourceTree = "<group>"; };
-		5217EF5F1E59A1BE00A10573 /* StorageUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StorageUtils.swift; path = ../../tippy/tippy/StorageUtils.swift; sourceTree = "<group>"; };
+		5217EF611E59A96C00A10573 /* StorageUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageUtils.swift; sourceTree = "<group>"; };
 		5286F70D1E5362A8004273C9 /* Flicks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Flicks.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5286F7101E5362A8004273C9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5286F7151E5362A8004273C9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -120,9 +120,9 @@
 		5217EF5D1E58B29B00A10573 /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				5217EF5F1E59A1BE00A10573 /* StorageUtils.swift */,
 				5217EF571E58A6C100A10573 /* Constant.swift */,
 				5217EF591E58AA7C00A10573 /* FlicksUtil.swift */,
+				5217EF611E59A96C00A10573 /* StorageUtils.swift */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -388,7 +388,7 @@
 				5217EF541E552F3D00A10573 /* MovieDetailViewController.swift in Sources */,
 				5286F7411E54B026004273C9 /* MovieCellTableViewCell.swift in Sources */,
 				5217EF5A1E58AA7C00A10573 /* FlicksUtil.swift in Sources */,
-				5217EF601E59A1BE00A10573 /* StorageUtils.swift in Sources */,
+				5217EF621E59A96C00A10573 /* StorageUtils.swift in Sources */,
 				5286F7111E5362A8004273C9 /* AppDelegate.swift in Sources */,
 				5286F73F1E54A5D6004273C9 /* MoviesViewController.swift in Sources */,
 				5217EF561E5756C000A10573 /* MovieCellCollectionViewCell.swift in Sources */,
