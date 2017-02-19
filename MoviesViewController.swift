@@ -41,15 +41,22 @@ class MoviesViewController: UIViewController {
         
         setupRefreshControl()
         setupSearchBar()
+        configureCollectionView()
         
         loadSettings()
         loadJsonData()
-        // configureCollectionView()
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        let backdropPath = selectedMovie["backdrop_path"] as? String
+        if (backdropPath != nil) {
+            setBackgroundImgForNavBar(posterPath: backdropPath!, res: Const.Large_Res)
+        }
     }
     
     @IBAction func viewTypeChanged(_ sender: AnyObject) {
@@ -160,7 +167,6 @@ extension MoviesViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         selectedMovie = filteredMovieData[indexPath.row]
-        setBackgroundImgForNavBar(posterPath: filteredMovieData[indexPath.row]["poster_path"] as! String, res: Const.Small_Res)
         performSegue(withIdentifier: "showDetail", sender: self)
     }
 }
@@ -173,7 +179,6 @@ extension MoviesViewController: UICollectionViewDataSource, UICollectionViewDele
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         selectedMovie = self.filteredMovieData[indexPath.row]
-        setBackgroundImgForNavBar(posterPath: filteredMovieData[indexPath.row]["poster_path"] as! String, res: Const.Small_Res)
         performSegue(withIdentifier: "showDetail", sender: self)
     }
     

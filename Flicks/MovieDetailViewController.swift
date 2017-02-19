@@ -11,8 +11,13 @@ import UIKit
 class MovieDetailViewController: UIViewController {
     
     @IBOutlet weak var posterImg: UIImageView!
-    @IBOutlet weak var desc: UILabel!
+    @IBOutlet weak var infoView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
+    
+    @IBOutlet weak var titleView: UILabel!
+    @IBOutlet weak var overviewLable: UILabel!
+    @IBOutlet weak var popularityView: UILabel!
+    @IBOutlet weak var releaseDateView: UILabel!
     
     var inputMovie = NSDictionary()
     
@@ -20,8 +25,30 @@ class MovieDetailViewController: UIViewController {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
-        desc.text = inputMovie["overview"] as? String
-        desc.sizeToFit()
+        navigationController?.navigationBar.setBackgroundImage(nil, for: .default)
+        navigationController?.navigationBar.barTintColor = UIColor.black
+        navigationController?.navigationBar.backgroundColor = UIColor.black
+        navigationController?.navigationBar.tintColor = UIColor.black
+        navigationController?.view.backgroundColor = UIColor.black
+        
+        let title = inputMovie["title"] as? String
+        let overview = inputMovie["overview"] as? String
+        
+        popularityView.text = "-"
+        if let popularity = inputMovie["popularity"]  as? String {
+            popularityView.text = "\(Int(popularity))%"
+        }
+        
+        releaseDateView.text = "Unknown"
+        if let releaseDateString = inputMovie["release_date"] as? String {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            releaseDateView.text = formatter.string(from: formatter.date(from: releaseDateString)!)
+        }
+        
+        titleView.text = title
+        overviewLable.text = overview
+        overviewLable.sizeToFit()
         
         // fading in an Image Loaded from the Network
         let smallImageRequest = NSURLRequest(url: NSURL(string: FlicksUtil.getImageUrl(posterPath: inputMovie["poster_path"] as! String, res: Const.Small_Res))! as URL)
@@ -44,7 +71,7 @@ class MovieDetailViewController: UIViewController {
                         withDuration: 0.3,
                         animations: { () -> Void in
                             self.posterImg.alpha = 1.0
-                        },
+                    },
                         completion: { (sucess) -> Void in
                             // get the LARGE image
                             self.posterImg.setImageWith(
@@ -65,11 +92,11 @@ class MovieDetailViewController: UIViewController {
                                         print("LARGE IMAGE was cached so just update the image")
                                         self.posterImg.image = largeImage
                                     }
-                                },
+                            },
                                 failure: { (request, response, error) -> Void in
-                                }
+                            }
                             )
-                        }
+                    }
                     )
                 } else {
                     print("SMALL image was cached so just update the image")
@@ -80,7 +107,7 @@ class MovieDetailViewController: UIViewController {
                         withDuration: 0.9,
                         animations: { () -> Void in
                             self.posterImg.alpha = 1.0
-                        },
+                    },
                         completion: { (sucess) -> Void in
                             // get the LARGE image
                             self.posterImg.setImageWith(
@@ -101,11 +128,11 @@ class MovieDetailViewController: UIViewController {
                                         print("LARGE IMAGE was cached so just update the image")
                                         self.posterImg.image = largeImage
                                     }
-                                },
+                            },
                                 failure: { (request, response, error) -> Void in
-                                }
+                            }
                             )
-                        }
+                    }
                     )
                 }
             },
@@ -113,7 +140,10 @@ class MovieDetailViewController: UIViewController {
             }
         )
         
-        scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: desc.frame.origin.y + desc.frame.size.height + 10)
+        infoView.frame.size = CGSize(width: infoView.frame.width, height: titleView.frame.height + releaseDateView.frame.height + overviewLable.frame.height + 30)
+        infoView.frame.origin.x = 20
+        infoView.frame.origin.y = 400
+        scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: infoView.frame.origin.y + infoView.frame.size.height + 5)
         
         let horizontalMotionEffect = UIInterpolatingMotionEffect(keyPath: "center.x", type: .tiltAlongHorizontalAxis)
         horizontalMotionEffect.minimumRelativeValue = -50
@@ -127,7 +157,6 @@ class MovieDetailViewController: UIViewController {
         motionEffectGroup.motionEffects = [horizontalMotionEffect, verticalMotionEffect]
         
         posterImg.addMotionEffect(motionEffectGroup)
-        
     }
     
     override func didReceiveMemoryWarning() {
