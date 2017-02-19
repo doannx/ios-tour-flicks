@@ -233,6 +233,7 @@
                                     <segment title="Table View"/>
                                     <segment title="List View"/>
                                 </segments>
+                                <color key="tintColor" red="0.6705882353" green="0.20000000000000001" blue="0.38823529410000002" alpha="1" colorSpace="calibratedRGB"/>
                                 <connections>
                                     <action selector="viewTypeChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="zkt-bu-Qca"/>
                                 </connections>
