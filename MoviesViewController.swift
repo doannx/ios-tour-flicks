@@ -346,7 +346,8 @@ extension MoviesViewController: UIScrollViewDelegate {
                 
                 // stop the loading indicator
                 self.loadingMoreViewTable!.stopAnimating()
-                
+                // TODO: updating data
+                                                                
                 // Reload the tableView now that there is new data
                 self.movieTable.reloadData()
                 self.movieCollection.reloadData()
