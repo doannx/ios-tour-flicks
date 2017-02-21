@@ -28,6 +28,7 @@ class MoviesViewController: UIViewController {
     
     var fullMovieData = [NSDictionary]()
     var filteredMovieData = [NSDictionary]()
+    
     var selectedMovie = NSDictionary()
     
     var endpoint: String = ""
@@ -44,34 +45,19 @@ class MoviesViewController: UIViewController {
         movieCollection.dataSource = self
         searchBarCtrl.delegate = self
         
+        loadSettings()
+        
         setupRefreshControl()
         setupSearchBar()
         configureCollectionView()
         
-        loadSettings()
         loadJsonData()
+        
+        setupInfiniteLoadingView()
         
         navigationController?.navigationBar.barTintColor = UIColor(red:0.98, green:0.86, blue:0.52, alpha:1.0)
         navigationController?.navigationBar.backgroundColor = UIColor(red:0.98, green:0.86, blue:0.52, alpha:1.0)
         
-        // Set up Infinite Scroll loading indicator
-        let frame = CGRect(x: 0, y: movieTable.contentSize.height, width: movieTable.bounds.size.width, height: InfiniteScrollActivityView.defaultHeight)
-        loadingMoreViewTable = InfiniteScrollActivityView(frame: frame)
-        loadingMoreViewTable!.isHidden = true
-        movieTable.addSubview(loadingMoreViewTable!)
-        
-        var insets = movieTable.contentInset
-        insets.bottom += InfiniteScrollActivityView.defaultHeight
-        movieTable.contentInset = insets
-        
-        let frameCollection = CGRect(x: 0, y: movieCollection.contentSize.height, width: movieCollection.bounds.size.width, height: InfiniteScrollActivityView.defaultHeight)
-        loadingMoreViewCollection = InfiniteScrollActivityView(frame: frameCollection)
-        loadingMoreViewCollection!.isHidden = true
-        movieCollection.addSubview(loadingMoreViewCollection!)
-        
-        var insetsCollection = movieCollection.contentInset
-        insetsCollection.bottom += InfiniteScrollActivityView.defaultHeight
-        movieCollection.contentInset = insetsCollection
     }
     
     override func didReceiveMemoryWarning() {
@@ -91,6 +77,14 @@ class MoviesViewController: UIViewController {
         movieCollection.isHidden = !movieTable.isHidden
         
         UserDefaults.standard.saveViewOption(viewOption: segmentViewType.selectedSegmentIndex)
+        
+        if segmentViewType.selectedSegmentIndex == 0 {
+            movieTable.insertSubview(refreshControl, at: 0)
+        } else {
+            movieCollection.insertSubview(refreshControl, at: 0)
+        }
+        
+        setupInfiniteLoadingView()
     }
     
     // MARK: - Navigation
@@ -168,9 +162,13 @@ class MoviesViewController: UIViewController {
     }
     
     func setupRefreshControl() {
-        refreshControl.addTarget(self, action: #selector(MoviesViewController.loadJsonData), for: UIControlEvents.valueChanged)
-        movieTable.insertSubview(refreshControl, at: 0)
-        movieCollection.insertSubview(refreshControl, at: 0)
+        refreshControl.addTarget(self, action: #selector(loadJsonData), for: UIControlEvents.valueChanged)
+        
+        if segmentViewType.selectedSegmentIndex == 0 {
+            movieTable.insertSubview(refreshControl, at: 0)
+        } else {
+            movieCollection.insertSubview(refreshControl, at: 0)
+        }
     }
     
     func setupSearchBar() {
@@ -185,6 +183,30 @@ class MoviesViewController: UIViewController {
     
     func onErrorViewTap(sender: AnyObject) {
         loadJsonData()
+    }
+    
+    func setupInfiniteLoadingView() {
+        // Set up Infinite Scroll loading indicator
+        if(segmentViewType.selectedSegmentIndex==0) {
+            let frame = CGRect(x: 0, y: movieTable.contentSize.height, width: movieTable.bounds.size.width, height: InfiniteScrollActivityView.defaultHeight)
+            loadingMoreViewTable = InfiniteScrollActivityView(frame: frame)
+            loadingMoreViewTable!.isHidden = true
+            movieTable.addSubview(loadingMoreViewTable!)
+            
+            var insets = movieTable.contentInset
+            insets.bottom += InfiniteScrollActivityView.defaultHeight
+            movieTable.contentInset = insets
+        } else {
+            let frameCollection = CGRect(x: 0, y: movieCollection.contentSize.height, width: movieCollection.bounds.size.width, height: InfiniteScrollActivityView.defaultHeight)
+            loadingMoreViewCollection = InfiniteScrollActivityView(frame: frameCollection)
+            loadingMoreViewCollection!.isHidden = true
+            movieCollection.addSubview(loadingMoreViewCollection!)
+            
+            var insetsCollection = movieCollection.contentInset
+            insetsCollection.bottom += InfiniteScrollActivityView.defaultHeight
+            movieCollection.contentInset = insetsCollection
+        }
+
     }
 }
 
